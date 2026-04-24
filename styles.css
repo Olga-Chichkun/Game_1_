@@ -572,6 +572,254 @@ button:hover { border-color: var(--accent); }
 .result-btn:hover { transform: none; }
 
 /* ==========================================================
+   Telegram chip на intro
+   ========================================================== */
+.tg-chip {
+  position: absolute;
+  left: 22px; bottom: 22px;
+  z-index: 12;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(86, 239, 255, 0.55);
+  background: linear-gradient(90deg, rgba(8, 20, 38, 0.88), rgba(4, 12, 25, 0.72));
+  color: #eaffff;
+  text-decoration: none;
+  box-shadow: 0 10px 28px rgba(5, 160, 220, 0.28);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+}
+.tg-chip:hover {
+  transform: translateY(-1px);
+  border-color: rgba(125, 244, 255, 0.9);
+  box-shadow: 0 12px 34px rgba(86, 239, 255, 0.45);
+}
+.tg-chip-icon {
+  width: 26px; height: 26px;
+  flex: 0 0 26px;
+  padding: 5px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #37b6ff 0%, #1f80d8 100%);
+  fill: #ffffff;
+  box-shadow: 0 0 14px rgba(55, 182, 255, 0.6);
+}
+.tg-chip-text { display: grid; line-height: 1.15; }
+.tg-chip-title {
+  font-size: 14px; font-weight: 700; letter-spacing: 0.04em;
+  color: #eaffff;
+  text-shadow: 0 0 8px rgba(86, 239, 255, 0.35);
+}
+.tg-chip-sub {
+  font-size: 10px; letter-spacing: 0.2em;
+  color: #9ac7d8; text-transform: uppercase;
+}
+
+/* ==========================================================
+   ПОБЕДНЫЙ ЭКРАН — яркий, праздничный
+   ========================================================== */
+#winScreen {
+  background: radial-gradient(circle at 50% 40%, rgba(46, 22, 88, 0.92) 0%, rgba(5, 8, 20, 0.96) 70%);
+}
+.win-shell {
+  position: relative;
+  width: min(96vw, 720px);
+  padding: 38px 32px 28px;
+  border-radius: 26px;
+  border: 1px solid rgba(255, 215, 120, 0.5);
+  background:
+    radial-gradient(circle at 50% 10%, rgba(255, 200, 90, 0.18) 0%, rgba(12, 18, 40, 0) 60%),
+    linear-gradient(180deg, rgba(26, 14, 58, 0.96), rgba(10, 10, 26, 0.96));
+  box-shadow:
+    0 0 60px rgba(255, 190, 80, 0.25),
+    0 24px 80px rgba(140, 70, 255, 0.35);
+  overflow: hidden;
+  text-align: center;
+  color: #fff9ea;
+}
+
+/* Лучи за карточкой */
+.win-rays {
+  position: absolute; inset: -20%;
+  z-index: 0; pointer-events: none;
+  background:
+    conic-gradient(from 0deg,
+      rgba(255, 200, 90, 0.14) 0deg,
+      rgba(255, 200, 90, 0) 20deg,
+      rgba(255, 200, 90, 0.14) 40deg,
+      rgba(255, 200, 90, 0) 60deg,
+      rgba(255, 200, 90, 0.14) 80deg,
+      rgba(255, 200, 90, 0) 100deg,
+      rgba(255, 200, 90, 0.14) 120deg,
+      rgba(255, 200, 90, 0) 140deg,
+      rgba(255, 200, 90, 0.14) 160deg,
+      rgba(255, 200, 90, 0) 180deg);
+  animation: rays-rotate 18s linear infinite;
+  opacity: 0.7;
+  filter: blur(6px);
+}
+@keyframes rays-rotate {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Конфетти */
+.win-confetti {
+  position: absolute; inset: 0;
+  z-index: 1; pointer-events: none;
+  overflow: hidden;
+}
+.confetti-piece {
+  position: absolute;
+  top: -20px;
+  width: 10px; height: 14px;
+  background: var(--c, #ffb347);
+  transform: rotate(var(--r, 0deg));
+  animation: confetti-fall var(--dur, 4s) linear var(--delay, 0s) infinite;
+  border-radius: 2px;
+  opacity: 0.95;
+}
+@keyframes confetti-fall {
+  0%   { transform: translate(0, 0) rotate(var(--r, 0deg)); opacity: 0; }
+  6%   { opacity: 1; }
+  100% { transform: translate(var(--dx, 0), 110vh) rotate(calc(var(--r, 0deg) + 720deg)); opacity: 0.9; }
+}
+
+/* Карточка поверх декора */
+.win-card {
+  position: relative;
+  z-index: 2;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 14px;
+}
+.win-trophy {
+  position: relative;
+  width: 96px; height: 96px;
+  display: grid; place-items: center;
+  margin-bottom: 4px;
+}
+.trophy-glow {
+  position: absolute; inset: -30%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 210, 110, 0.6) 0%, rgba(255, 210, 110, 0) 70%);
+  filter: blur(6px);
+  animation: trophy-pulse 2.2s ease-in-out infinite;
+}
+@keyframes trophy-pulse {
+  0%, 100% { transform: scale(1);   opacity: 0.75; }
+  50%      { transform: scale(1.12); opacity: 1; }
+}
+.trophy-icon {
+  position: relative;
+  font-size: 72px;
+  line-height: 1;
+  background: linear-gradient(180deg, #ffe9a0 0%, #ffb347 55%, #d97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 6px 14px rgba(255, 180, 70, 0.6));
+}
+.win-title {
+  margin: 0;
+  font-size: clamp(34px, 5.2vw, 52px);
+  letter-spacing: 0.06em;
+  background: linear-gradient(90deg, #ffe9a0, #ffb347, #ff7ad9, #56efff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 22px rgba(255, 200, 90, 0.35);
+}
+.win-subtitle {
+  font-size: 15px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #f3d68a;
+  text-shadow: 0 0 12px rgba(255, 190, 90, 0.4);
+}
+.win-text {
+  margin: 4px 0 0;
+  max-width: 520px;
+  color: #d8e5ff;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.win-cta {
+  margin-top: 10px;
+  padding: 18px 18px 16px;
+  width: 100%;
+  max-width: 520px;
+  border-radius: 18px;
+  border: 1px solid rgba(86, 239, 255, 0.4);
+  background: linear-gradient(180deg, rgba(20, 34, 64, 0.72), rgba(10, 18, 40, 0.88));
+  box-shadow: inset 0 0 30px rgba(86, 239, 255, 0.08);
+}
+.win-cta-title {
+  font-size: 16px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #7df4ff;
+  text-shadow: 0 0 12px rgba(86, 239, 255, 0.5);
+}
+.win-cta-sub {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #cfe5ff;
+  line-height: 1.5;
+}
+
+.tg-big-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px 22px;
+  border-radius: 14px;
+  border: 1px solid rgba(86, 239, 255, 0.7);
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  background: linear-gradient(90deg, #1f80d8 0%, #37b6ff 50%, #7a5aff 100%);
+  box-shadow: 0 0 28px rgba(86, 239, 255, 0.45), 0 10px 28px rgba(122, 90, 255, 0.35);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.25s ease, filter 0.2s ease;
+}
+.tg-big-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow: 0 0 42px rgba(86, 239, 255, 0.7), 0 14px 36px rgba(122, 90, 255, 0.55);
+}
+.tg-big-btn-icon {
+  width: 24px; height: 24px;
+  fill: #ffffff;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.5));
+}
+
+.win-restart-btn {
+  margin-top: 6px;
+  padding: 10px 20px;
+  width: auto;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: transparent;
+  color: #cfe5ff;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.win-restart-btn:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ==========================================================
    Адаптив
    ========================================================== */
 @media (max-width: 900px) {
@@ -588,6 +836,20 @@ button:hover { border-color: var(--accent); }
   .slot-img { width: 42px; height: 42px; }
   .slot-name { font-size: 10px; }
   .artifact-item { width: 110px !important; height: 110px !important; }
+
+  .tg-chip { left: 12px; bottom: 12px; padding: 6px 12px 6px 8px; }
+  .tg-chip-icon { width: 22px; height: 22px; flex: 0 0 22px; }
+  .tg-chip-title { font-size: 12px; }
+  .tg-chip-sub { font-size: 9px; }
+
+  .win-shell { padding: 28px 18px 20px; border-radius: 20px; }
+  .win-trophy { width: 72px; height: 72px; }
+  .trophy-icon { font-size: 56px; }
+  .win-title { font-size: 32px; }
+  .win-subtitle { font-size: 12px; letter-spacing: 0.16em; }
+  .win-text { font-size: 13.5px; }
+  .win-cta { padding: 14px 14px 12px; }
+  .tg-big-btn { font-size: 15px; padding: 11px 18px; }
 }
 
 /* ==========================================================
@@ -640,10 +902,10 @@ button:hover { border-color: var(--accent); }
   50%      { transform: translateX(-50%) scale(1.06); }
 }
 
-/* Трясучка камеры в последние 5 секунд */
+/* Трясучка камеры в последние секунды */
 .game-screen.camera-shake .level-bg,
 .game-screen.camera-shake .fog-layer,
-.game-screen.camera-shake .fog-heavy,
+.game-screen.camera-shake .level-tint,
 .game-screen.camera-shake .ambient-sprites,
 .game-screen.camera-shake .fake-lights,
 .game-screen.camera-shake .particles-canvas {
@@ -726,49 +988,25 @@ button:hover { border-color: var(--accent); }
 }
 
 /* ==========================================================
-   L3 — ТУМАННЫЕ НИЗИНЫ (густой движущийся туман)
+   ЦВЕТОВОЙ ТОН УРОВНЯ (fx-tint-*)
    ========================================================== */
-.fog-heavy {
+.level-tint {
   position: absolute; inset: 0;
   z-index: 5; pointer-events: none;
-  display: none;
-  overflow: hidden;
-}
-.game-screen.fx-fog-heavy .fog-heavy,
-.game-screen.fx-fog-light .fog-heavy { display: block; }
-
-.fog-heavy-layer {
-  position: absolute;
-  left: -30%; top: -20%;
-  width: 160%; height: 140%;
-  background:
-    radial-gradient(ellipse at 20% 40%, rgba(200, 220, 240, 0.35) 0%, rgba(200, 220, 240, 0) 50%),
-    radial-gradient(ellipse at 70% 60%, rgba(220, 230, 255, 0.3) 0%, rgba(220, 230, 255, 0) 55%),
-    radial-gradient(ellipse at 50% 30%, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 60%);
-  filter: blur(28px);
   opacity: 0;
-  will-change: transform, opacity;
+  transition: opacity 0.6s ease;
 }
-.game-screen.fx-fog-heavy .fog-heavy-layer { opacity: 1; }
-.game-screen.fx-fog-light .fog-heavy-layer { opacity: 0.5; }
-
-.fog-heavy-a { animation: fog-drift-a 60s linear infinite; }
-.fog-heavy-b { animation: fog-drift-b 80s linear infinite; opacity: 0.85; mix-blend-mode: normal; }
-.fog-heavy-c { animation: fog-drift-c 110s linear infinite; opacity: 0.7; }
-@keyframes fog-drift-a {
-  0%   { transform: translate(0, 0); }
-  50%  { transform: translate(10%, -4%); }
-  100% { transform: translate(0, 0); }
+.game-screen.fx-tint-violet .level-tint {
+  opacity: 1;
+  background:
+    radial-gradient(ellipse at 50% 45%, rgba(140, 85, 220, 0.18) 0%, rgba(70, 30, 130, 0) 65%),
+    linear-gradient(180deg, rgba(70, 20, 120, 0.18) 0%, rgba(35, 8, 72, 0.28) 100%);
 }
-@keyframes fog-drift-b {
-  0%   { transform: translate(-5%, 2%); }
-  50%  { transform: translate(8%, -3%); }
-  100% { transform: translate(-5%, 2%); }
-}
-@keyframes fog-drift-c {
-  0%   { transform: translate(6%, -3%); }
-  50%  { transform: translate(-8%, 3%); }
-  100% { transform: translate(6%, -3%); }
+.game-screen.fx-tint-amber .level-tint {
+  opacity: 1;
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(255, 170, 80, 0.14) 0%, rgba(150, 80, 20, 0) 60%),
+    linear-gradient(180deg, rgba(60, 30, 0, 0.2) 0%, rgba(30, 14, 0, 0.28) 100%);
 }
 
 /* ==========================================================
@@ -808,14 +1046,6 @@ button:hover { border-color: var(--accent); }
 /* ==========================================================
    Темы по уровням (оттенок атмосферы)
    ========================================================== */
-/* L2: лёгкое размытие и затемнение гасит контурные силуэты макета,
-   при этом атмосфера руин/лиан остаётся. */
-.game-screen.level-2 .level-bg {
-  filter: saturate(1.05) blur(2.5px) brightness(0.78) contrast(1.05);
-}
-.game-screen.level-3 .level-bg {
-  filter: brightness(0.9) saturate(0.8) hue-rotate(-6deg);
-}
 .game-screen.level-5 .timer-wrap { top: 88px; }
 
 /* Для небольших экранов — слегка сжимаем слоты на L4/L5, т.к. их много */

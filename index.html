@@ -15,6 +15,18 @@
       <div class="ui-panel">
         <button id="startGameBtn" class="start-btn" type="button">Приступим</button>
       </div>
+      <a class="tg-chip"
+         href="https://t.me/neuro_for_me"
+         target="_blank" rel="noopener"
+         title="Автор в Telegram">
+        <svg class="tg-chip-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9.6 14.9l-.4 4.2c.6 0 .9-.3 1.2-.6l2.8-2.7 5.8 4.2c1.1.6 1.9.3 2.1-1l3.8-17.9h.1c.3-1.6-.6-2.2-1.6-1.8L1.8 9.2c-1.6.6-1.6 1.5-.3 1.9l5.5 1.7 12.9-8.1c.6-.4 1.2-.2.7.3"/>
+        </svg>
+        <span class="tg-chip-text">
+          <span class="tg-chip-title">@neuro_for_me</span>
+          <span class="tg-chip-sub">автор игры в Telegram</span>
+        </span>
+      </a>
     </div>
   </div>
 
@@ -40,15 +52,11 @@
     <!-- неоновые частицы (canvas-слой глубины) -->
     <canvas id="particlesCanvas" class="particles-canvas" aria-hidden="true"></canvas>
 
-    <!-- fog-слой (прозрачный градиент поверх сцены) -->
+    <!-- fog-слой (прозрачный градиент поверх сцены, лёгкая виньетка) -->
     <div class="fog-layer" aria-hidden="true"></div>
 
-    <!-- Плотный движущийся туман (включается на L3/L4) -->
-    <div class="fog-heavy" aria-hidden="true">
-      <div class="fog-heavy-layer fog-heavy-a"></div>
-      <div class="fog-heavy-layer fog-heavy-b"></div>
-      <div class="fog-heavy-layer fog-heavy-c"></div>
-    </div>
+    <!-- Цветовой тон уровня (включается через fx-tint-*) -->
+    <div class="level-tint" aria-hidden="true"></div>
 
     <!-- Свисающие лианы (L2) -->
     <div class="vines-layer" id="vinesLayer" aria-hidden="true"></div>
@@ -83,7 +91,7 @@
       <!-- Таймер (появляется только на L5) -->
       <div id="timerWrap" class="timer-wrap hidden" aria-hidden="true">
         <span class="timer-icon">⏱</span>
-        <span id="timerValue" class="timer-value">30</span>
+        <span id="timerValue" class="timer-value">10</span>
         <span class="timer-unit">сек</span>
       </div>
 
@@ -111,17 +119,44 @@
   </div>
 
   <div id="winScreen" class="modal hidden">
-    <div class="result-card modal-content">
-      <h2>Квест пройден</h2>
-      <p>Ты нашёл все артефакты и завершил наблюдательский путь.</p>
-      <button id="restartWinBtn" type="button" class="start-btn result-btn">Сыграть снова</button>
+    <div class="win-shell modal-content">
+      <div class="win-rays" aria-hidden="true"></div>
+      <div class="win-confetti" id="winConfetti" aria-hidden="true"></div>
+      <div class="win-card">
+        <div class="win-trophy" aria-hidden="true">
+          <div class="trophy-glow"></div>
+          <div class="trophy-icon">★</div>
+        </div>
+        <h2 class="win-title">Поздравляем!</h2>
+        <div class="win-subtitle">Квест Наблюдателя пройден</div>
+        <p class="win-text">
+          Твой глаз уже острый, как у настоящего охотника за тайнами.
+          Все пять уровней покорены!
+        </p>
+        <div class="win-cta">
+          <div class="win-cta-title">Скоро новые игры и загадки</div>
+          <div class="win-cta-sub">
+            Хочешь игру под заказ? Напиши мне в Telegram — обсудим идею.
+          </div>
+          <a id="winTgLink"
+             class="tg-big-btn"
+             href="https://t.me/neuro_for_me"
+             target="_blank" rel="noopener">
+            <svg class="tg-big-btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9.6 14.9l-.4 4.2c.6 0 .9-.3 1.2-.6l2.8-2.7 5.8 4.2c1.1.6 1.9.3 2.1-1l3.8-17.9h.1c.3-1.6-.6-2.2-1.6-1.8L1.8 9.2c-1.6.6-1.6 1.5-.3 1.9l5.5 1.7 12.9-8.1c.6-.4 1.2-.2.7.3"/>
+            </svg>
+            <span>Написать в Telegram</span>
+          </a>
+        </div>
+        <button id="restartWinBtn" type="button" class="win-restart-btn">Сыграть снова</button>
+      </div>
     </div>
   </div>
 
   <div id="gameOverScreen" class="modal hidden">
     <div class="result-card modal-content">
       <h2>Время вышло</h2>
-      <p>Ты не успел собрать все артефакты за 30 секунд. Попробуй ещё раз — глаз уже привыкает.</p>
+      <p>Ты не успел собрать все артефакты за 10 секунд. Попробуй ещё раз — глаз уже привыкает.</p>
       <button id="retryLevelBtn" type="button" class="start-btn result-btn">Попробовать снова</button>
     </div>
   </div>

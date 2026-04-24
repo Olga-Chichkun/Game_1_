@@ -63,11 +63,11 @@ const LEVELS = [
   },
   {
     id: 2,
-    name: "Руины с лианами",
-    subtitle: "Свисающие лозы и тени маскируют находки",
-    background: "./background_2.jpg",
+    name: "Лозовые руины",
+    subtitle: "Свисающие лозы маскируют находки",
+    background: "./background_1.jpg",
     ambient: 14,
-    effects: { vines: true, extraGlow: true },
+    effects: { vines: true, extraGlow: true, tint: "violet" },
     artifacts: [
       { type: "crystal",  left: 13, top: 34, size: 108, depth: 0.9 },
       { type: "vase",     left: 42, top: 22, size: 102, depth: 0.55 },
@@ -79,11 +79,11 @@ const LEVELS = [
   },
   {
     id: 3,
-    name: "Туманные низины",
-    subtitle: "Густая дымка скрывает детали",
+    name: "Закатные низины",
+    subtitle: "Семь предметов в отблесках заката",
     background: "./background_1.jpg",
     ambient: 5,
-    effects: { fog: "heavy" },
+    effects: { tint: "amber" },
     artifacts: [
       { type: "crystal",  left: 12, top: 40, size: 108, depth: 0.9 },
       { type: "vase",     left: 28, top: 24, size: 98,  depth: 0.55 },
@@ -100,7 +100,7 @@ const LEVELS = [
     subtitle: "Ложные огни путают взгляд",
     background: "./background_1.jpg",
     ambient: 8,
-    effects: { dark: true, fakeLights: 14, fog: "light" },
+    effects: { dark: true, fakeLights: 14 },
     artifacts: [
       { type: "crystal",  left: 8,  top: 32, size: 98,  depth: 0.9 },
       { type: "vase",     left: 22, top: 58, size: 90,  depth: 0.55 },
@@ -115,10 +115,10 @@ const LEVELS = [
   {
     id: 5,
     name: "Час расплаты",
-    subtitle: "30 секунд на 9 артефактов",
+    subtitle: "10 секунд на 9 артефактов",
     background: "./background_1.jpg",
     ambient: 4,
-    effects: { timer: 30, dark: false },
+    effects: { timer: 10 },
     artifacts: [
       { type: "crystal",  left: 10, top: 30, size: 82, depth: 0.9 },
       { type: "vase",     left: 26, top: 22, size: 74, depth: 0.55 },
@@ -136,6 +136,7 @@ const LEVELS = [
 /* ---------- Состояние ---------- */
 const state = {
   started: false,
+  ended: false,
   level: 1,
   maxLevels: LEVELS.length,
   collected: new Set(),
@@ -234,6 +235,7 @@ function buildSlots() {
    Клик по артефакту
    ========================================================= */
 function handleArtifactClick(uid, el) {
+  if (state.ended) return;
   if (state.collected.has(uid)) {
     el.classList.remove("shake-red");
     void el.offsetWidth;
@@ -245,6 +247,7 @@ function handleArtifactClick(uid, el) {
 }
 
 function collectArtifact(uid) {
+  if (state.ended) return;
   if (state.collected.has(uid)) return;
   state.collected.add(uid);
 
@@ -622,16 +625,19 @@ function startTimer(sec) {
   timerWrap.classList.remove("hidden");
   timerWrap.classList.remove("warn", "critical");
   timerValue.textContent = String(sec);
+  // Пороги пропорциональны длительности
+  const warnAt = Math.max(3, Math.round(sec * 0.4));      // 40% остатка
+  const criticalAt = Math.max(2, Math.round(sec * 0.2));  // 20% остатка
   state.timer.interval = setInterval(() => {
     state.timer.remaining -= 1;
     timerValue.textContent = String(state.timer.remaining);
     timerValue.classList.remove("tick");
     void timerValue.offsetWidth;
     timerValue.classList.add("tick");
-    if (state.timer.remaining <= 10 && state.timer.remaining > 5) {
+    if (state.timer.remaining <= warnAt && state.timer.remaining > criticalAt) {
       timerWrap.classList.add("warn");
       playTickSound(500);
-    } else if (state.timer.remaining <= 5 && state.timer.remaining > 0) {
+    } else if (state.timer.remaining <= criticalAt && state.timer.remaining > 0) {
       timerWrap.classList.add("warn", "critical");
       gameScreen.classList.add("camera-shake");
       playTickSound(680);
@@ -661,9 +667,9 @@ function hideTimer() {
    Применение визуальной конфигурации уровня
    ========================================================= */
 function applyLevelTheme(level) {
-  // Чистим ранее применённые классы
+  // Чистим ранее применённые level-* и fx-* классы
   const cls = gameScreen.className.split(" ").filter(c =>
-    !/^level-\d+$/.test(c) && !/^fx-/.test(c)
+    !/^level-\d+$/.test(c) && !/^fx-/.test(c) && c !== ""
   );
   gameScreen.className = cls.join(" ");
   gameScreen.classList.add(`level-${level.id}`);
@@ -673,11 +679,10 @@ function applyLevelTheme(level) {
 
   // Эффекты уровня
   const fx = level.effects || {};
-  if (fx.fog === "heavy") gameScreen.classList.add("fx-fog-heavy");
-  else if (fx.fog === "light") gameScreen.classList.add("fx-fog-light");
   if (fx.dark) gameScreen.classList.add("fx-dark");
   if (fx.vines) gameScreen.classList.add("fx-vines");
   if (fx.extraGlow) gameScreen.classList.add("fx-extraglow");
+  if (fx.tint) gameScreen.classList.add(`fx-tint-${fx.tint}`);
 
   // Лианы
   if (fx.vines) spawnVines(); else if (vinesLayer) vinesLayer.innerHTML = "";
@@ -726,6 +731,14 @@ function startFromIntro() {
    Уровни
    ========================================================= */
 function startLevel(level) {
+  // Полный сброс состояний результата предыдущей попытки
+  state.ended = false;
+  winScreen.classList.add("hidden");
+  gameOverScreen.classList.add("hidden");
+  levelCompleteScreen.classList.add("hidden");
+  const confettiHost = document.getElementById("winConfetti");
+  if (confettiHost) confettiHost.innerHTML = "";
+
   state.level = level;
   state.collected = new Set();
   const lvl = currentLevel();
@@ -741,24 +754,61 @@ function startLevel(level) {
 }
 
 function finishLevel() {
+  if (state.ended) return;
+  state.ended = true;
+  state.started = false;
   stopTimer();
   stopParticles();
+  gameOverScreen.classList.add("hidden");
   if (state.level < state.maxLevels) {
     gameScreen.classList.add("hidden");
+    winScreen.classList.add("hidden");
     levelCompleteScreen.classList.remove("hidden");
-    state.started = false;
   } else {
     gameScreen.classList.add("hidden");
+    levelCompleteScreen.classList.add("hidden");
     winScreen.classList.remove("hidden");
-    state.started = false;
+    spawnConfetti();
+  }
+}
+
+/* Конфетти на финальном экране */
+function spawnConfetti(count = 70) {
+  const host = document.getElementById("winConfetti");
+  if (!host) return;
+  host.innerHTML = "";
+  const colors = ["#ffe066", "#ffb347", "#ff7ad9", "#7df4ff", "#c073ff", "#7aff9b"];
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement("div");
+    p.className = "confetti-piece";
+    const x = Math.random() * 100;
+    const dx = (Math.random() - 0.5) * 30;
+    const dur = 3 + Math.random() * 4;
+    const delay = Math.random() * 3;
+    const rot = Math.random() * 360;
+    p.style.left = x + "%";
+    p.style.setProperty("--dx", dx + "vw");
+    p.style.setProperty("--dur", dur + "s");
+    p.style.setProperty("--delay", delay + "s");
+    p.style.setProperty("--r", rot + "deg");
+    p.style.setProperty("--c", colors[i % colors.length]);
+    p.style.width = (6 + Math.random() * 8) + "px";
+    p.style.height = (10 + Math.random() * 10) + "px";
+    host.appendChild(p);
   }
 }
 
 function gameOver() {
+  if (state.ended) return;
+  state.ended = true;
+  state.started = false;
   stopTimer();
   stopParticles();
-  state.started = false;
   gameScreen.classList.add("hidden");
+  winScreen.classList.add("hidden");
+  levelCompleteScreen.classList.add("hidden");
+  const host = document.getElementById("winConfetti");
+  if (host) host.innerHTML = "";
   if (gameOverScreen) gameOverScreen.classList.remove("hidden");
 }
 
@@ -792,6 +842,8 @@ if (nextLevelBtn) {
 if (restartWinBtn) {
   restartWinBtn.addEventListener("click", () => {
     winScreen.classList.add("hidden");
+    const host = document.getElementById("winConfetti");
+    if (host) host.innerHTML = "";
     startTransitionToLevel(1);
   });
 }
