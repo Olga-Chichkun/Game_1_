@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Квест Наблюдателя</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="intro-active">
+
+  <!-- Intro -->
+  <div id="introScreen" class="modal">
+    <div class="modal-shell modal-content intro-reference intro-ui">
+      <img class="intro-image intro-bg" src="./Window.jpg" alt="Интро экран">
+      <div class="ui-panel">
+        <button id="startGameBtn" class="start-btn" type="button">Приступим</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Кинематический переход -->
+  <div id="transitionOverlay" class="transition-overlay hidden" aria-hidden="true">
+    <div class="transition-vines">
+      <div class="vine vine-left"></div>
+      <div class="vine vine-right"></div>
+    </div>
+    <div class="transition-fade"></div>
+    <div class="transition-sprites" id="transitionSprites"></div>
+    <div class="transition-title">
+      <span>Уровень 1</span>
+      <small>Вход в наблюдательский путь</small>
+    </div>
+  </div>
+
+  <!-- Игровой экран -->
+  <div id="gameScreen" class="game-screen hidden level-1">
+    <!-- фон (parallax) -->
+    <img class="level-bg" src="./background_1.jpg" alt="Сцена уровня">
+
+    <!-- неоновые частицы (canvas-слой глубины) -->
+    <canvas id="particlesCanvas" class="particles-canvas" aria-hidden="true"></canvas>
+
+    <!-- fog-слой (прозрачный градиент поверх сцены) -->
+    <div class="fog-layer" aria-hidden="true"></div>
+
+    <!-- Плотный движущийся туман (включается на L3/L4) -->
+    <div class="fog-heavy" aria-hidden="true">
+      <div class="fog-heavy-layer fog-heavy-a"></div>
+      <div class="fog-heavy-layer fog-heavy-b"></div>
+      <div class="fog-heavy-layer fog-heavy-c"></div>
+    </div>
+
+    <!-- Свисающие лианы (L2) -->
+    <div class="vines-layer" id="vinesLayer" aria-hidden="true"></div>
+
+    <!-- Ложные огоньки (L4) -->
+    <div class="fake-lights" id="fakeLights" aria-hidden="true"></div>
+
+    <!-- Лёгкие атокирина (DOM-светлячки) -->
+    <div class="ambient-sprites" id="ambientSprites" aria-hidden="true"></div>
+
+    <!-- Ночная виньетка (L4) -->
+    <div class="night-vignette" aria-hidden="true"></div>
+
+    <div class="game-ui">
+      <div class="top-panel">
+        <div class="level-chip">
+          <span class="level-label">Уровень</span>
+          <span id="levelNumber" class="level-num">1</span>
+          <span class="level-total">из 5</span>
+        </div>
+        <div class="quest-block">
+          <div class="quest-title">Найди все артефакты</div>
+          <div class="progress-line">
+            <span id="artifactCounter">0 / 5</span>
+          </div>
+        </div>
+        <button id="hintBtn" class="hint-btn" type="button">
+          <span class="hint-q">?</span><span class="hint-label">Подсказка</span>
+        </button>
+      </div>
+
+      <!-- Таймер (появляется только на L5) -->
+      <div id="timerWrap" class="timer-wrap hidden" aria-hidden="true">
+        <span class="timer-icon">⏱</span>
+        <span id="timerValue" class="timer-value">30</span>
+        <span class="timer-unit">сек</span>
+      </div>
+
+      <!-- Слой артефактов (генерируется из JS) -->
+      <div id="artifactLayer" class="artifact-layer"></div>
+
+      <!-- Нижняя панель «Список артефактов» — строится из JS -->
+      <aside class="artifact-list" aria-label="Список артефактов">
+        <div class="artifact-list-title">Список артефактов</div>
+        <div class="artifact-slots" id="artifactSlots"></div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Всплывающая подсказка «+1 артефакт» -->
+  <div id="toast" class="toast hidden" aria-live="polite"></div>
+
+  <!-- Модалки -->
+  <div id="levelCompleteScreen" class="modal hidden">
+    <div class="result-card modal-content">
+      <h2>Уровень пройден</h2>
+      <p>Ты нашла все артефакты руин.</p>
+      <button id="nextLevelBtn" type="button" class="start-btn result-btn">Следующий уровень</button>
+    </div>
+  </div>
+
+  <div id="winScreen" class="modal hidden">
+    <div class="result-card modal-content">
+      <h2>Квест пройден</h2>
+      <p>Ты нашёл все артефакты и завершил наблюдательский путь.</p>
+      <button id="restartWinBtn" type="button" class="start-btn result-btn">Сыграть снова</button>
+    </div>
+  </div>
+
+  <div id="gameOverScreen" class="modal hidden">
+    <div class="result-card modal-content">
+      <h2>Время вышло</h2>
+      <p>Ты не успел собрать все артефакты за 30 секунд. Попробуй ещё раз — глаз уже привыкает.</p>
+      <button id="retryLevelBtn" type="button" class="start-btn result-btn">Попробовать снова</button>
+    </div>
+  </div>
+
+  <script src="./main.js"></script>
+</body>
+</html>
